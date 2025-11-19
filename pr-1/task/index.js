@@ -5,9 +5,10 @@ const demo = require('./demo');
 const { parseArgs, delay } = require('./utils');
 const EventObserver = require('./EventObserver');
 const BackupService = require('./BackupService');
+const BackupReporter = require('./BackupReporter');
 
 const DATA_FILE = path.join(__dirname, 'students.json');
-
+const BACKUP_DIR = path.join(__dirname, 'backups');
 
 (async function main() {
   const { verbose, quiet } = parseArgs();
@@ -34,5 +35,9 @@ const DATA_FILE = path.join(__dirname, 'students.json');
 
   logger.log('Saving data...');
   await manager.saveToJSON(DATA_FILE);
+
+  const reporter = new BackupReporter(BACKUP_DIR, logger);
+  await reporter.generateReport();
+
   logger.log('Done.');
 })()
