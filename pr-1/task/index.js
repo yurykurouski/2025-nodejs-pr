@@ -1,15 +1,13 @@
 const path = require('path');
-const Logger = require('./Logger');
 const StudentManager = require('./StudentManager');
-
-const { parseArgs } = require('./utils');
-const { demo } = require('./demo')
+const Logger = require('./Logger');
+const demo = require('./demo');
+const { parseArgs, delay } = require('./utils');
+const EventObserver = require('./EventObserver');
+const BackupService = require('./BackupService');
 
 const DATA_FILE = path.join(__dirname, 'students.json');
 
-const BackupService = require('./BackupService');
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 (async function main() {
   const { verbose, quiet } = parseArgs();
@@ -17,6 +15,8 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
   const logger = new Logger(verbose, quiet);
   const manager = new StudentManager(logger);
   const backupService = new BackupService(manager, logger);
+
+  new EventObserver(manager, backupService, logger);
 
   logger.log('Loading student data...');
   await manager.loadJSON(DATA_FILE);
