@@ -1,8 +1,11 @@
 const fs = require('fs');
 const path = require('path');
+const EventEmitter = require('events');
+const { EVENTS } = require('./constants');
 
-class BackupService {
+class BackupService extends EventEmitter {
     constructor(studentManager, logger, backupInterval = 5000) {
+        super();
         this.studentManager = studentManager;
         this.logger = logger;
         this.backupInterval = backupInterval;
@@ -58,9 +61,9 @@ class BackupService {
             const data = JSON.stringify(students, null, 2);
             await fs.promises.writeFile(filePath, data, 'utf8');
 
-            this.logger.log(`Backup created successfully: ${filename}`);
+            this.emit(EVENTS.BACKUP_CREATED, filename);
         } catch (error) {
-            this.logger.log('Backup failed:', error.message);
+            this.emit(EVENTS.BACKUP_FAILED, error);
         } finally {
             this.isBackupInProgress = false;
         }
