@@ -33,23 +33,23 @@ class StudentManager {
         return totalAge / this.students.length;
     }
 
-    saveToJSON(filePath) {
+    async saveToJSON(filePath) {
         const data = JSON.stringify(this.students, null, 2);
-        fs.writeFileSync(filePath, data, 'utf8');
+        await fs.promises.writeFile(filePath, data, 'utf8');
     }
 
-    loadJSON(filePath) {
+    async loadJSON(filePath) {
         try {
-            if (fs.existsSync(filePath)) {
-                const data = fs.readFileSync(filePath, 'utf8');
-                const parsedData = JSON.parse(data);
-                this.students = parsedData.map(
-                    s => new Student(s.id, s.name, s.age, s.group)
-                );
-            }
+            const data = await fs.promises.readFile(filePath, 'utf8');
+            const parsedData = JSON.parse(data);
+            this.students = parsedData.map(
+                s => new Student(s.id, s.name, s.age, s.group)
+            );
         } catch (error) {
-            if (this.logger) {
-                this.logger.log(`Error loading data from ${filePath}:`, error.message);
+            if (error.code !== 'ENOENT') { // Ignore missing file error
+                if (this.logger) {
+                    this.logger.log(`Error loading data from ${filePath}:`, error.message);
+                }
             }
             this.students = [];
         }
