@@ -14,6 +14,9 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+// Serve frontend
+app.use(express.static(path.join(__dirname, 'public')));
+
 const logger = new Logger(true, false);
 const manager = new StudentManager(logger);
 const backupService = new BackupService(manager, logger);
