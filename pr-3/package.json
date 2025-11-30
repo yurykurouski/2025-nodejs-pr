@@ -2,10 +2,10 @@
   "name": "pr-3-students-api",
   "version": "1.0.0",
   "description": "Students Management System - basic HTTP server and Express API",
-  "main": "server_express.js",
+  "main": "index_express.js",
   "scripts": {
-    "basic": "node server_basic.js",
-    "start": "node server_express.js"
+    "basic": "node index_basic.js",
+    "start": "node index_express.js"
   },
   "dependencies": {
     "express": "^4.18.2"
