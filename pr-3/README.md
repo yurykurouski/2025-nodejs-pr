@@ -27,7 +27,7 @@ Some API clients you can use:
 Using `http` built-in Node.js module, create a simple HTTP server that listens for a port `3000` and returns you a simple response with HTML if you're trying to reach `http://localhost:3000/`:
 
 ```html
-<h1>Hello World</h2>
+<h1>Hello World</h1>
 ```
 
 Check how your app works using your API client.
