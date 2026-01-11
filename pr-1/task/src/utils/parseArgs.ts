@@ -1,8 +1,8 @@
-const { ARGS } = require('../constants');
+import { ARGS } from '../constants';
 
-function parseArgs() {
+export function parseArgs(): Record<string, boolean> {
     const args = process.argv.slice(2);
-    const parsed = {};
+    const parsed: Record<string, boolean> = {};
 
     Object.values(ARGS).forEach(arg => {
         const key = arg.replace(/^--/, '');
@@ -11,5 +11,3 @@ function parseArgs() {
 
     return parsed;
 }
-
-module.exports = parseArgs 

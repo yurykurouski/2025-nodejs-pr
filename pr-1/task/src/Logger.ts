@@ -1,6 +1,6 @@
-const os = require('os');
+import os from 'os';
 
-class Logger {
+export class Logger {
     #isVerboseModeEnabled = false;
     #isQuietModeEnabled = false;
 
@@ -9,7 +9,7 @@ class Logger {
         this.#isQuietModeEnabled = quiet;
     }
 
-    log(...data) {
+    log(...data: any[]) {
         if (this.#isQuietModeEnabled) {
             return;
         }
@@ -30,5 +30,3 @@ class Logger {
         console.log(...data);
     }
 }
-
-module.exports = Logger;

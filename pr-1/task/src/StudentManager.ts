@@ -1,30 +1,34 @@
-const fs = require('fs');
-const EventEmitter = require('events');
-const Student = require('./Student');
-const { EVENTS } = require('./constants');
+import fs from 'fs';
+import { EventEmitter } from 'events';
+import Student from './models/Student';
+import { EVENTS } from './constants';
+import { Logger } from './Logger';
 
-class StudentManager extends EventEmitter {
-    constructor(logger) {
+export class StudentManager extends EventEmitter {
+    students: Student[];
+    logger: Logger;
+
+    constructor(logger: Logger) {
         super();
         this.students = [];
         this.logger = logger;
     }
 
-    addStudent(student) {
+    addStudent(student: Student) {
         this.students.push(student);
         this.emit(EVENTS.STUDENT_ADDED, student);
     }
 
-    removeStudent(id) {
+    removeStudent(id: number) {
         this.students = this.students.filter(student => student.id !== id);
         this.emit(EVENTS.STUDENT_REMOVED, id);
     }
 
-    getStudentById(id) {
+    getStudentById(id: number) {
         return this.students.find(student => student.id === id);
     }
 
-    getStudentsByGroup(group) {
+    getStudentsByGroup(group: string) {
         return this.students.filter(student => student.group === group);
     }
 
@@ -38,21 +42,21 @@ class StudentManager extends EventEmitter {
         return totalAge / this.students.length;
     }
 
-    async saveToJSON(filePath) {
+    async saveToJSON(filePath: string) {
         const data = JSON.stringify(this.students, null, 2);
         await fs.promises.writeFile(filePath, data, 'utf8');
         this.emit(EVENTS.DATA_SAVED, filePath);
     }
 
-    async loadJSON(filePath) {
+    async loadJSON(filePath: string) {
         try {
             const data = await fs.promises.readFile(filePath, 'utf8');
             const parsedData = JSON.parse(data);
             this.students = parsedData.map(
-                s => new Student(s.id, s.name, s.age, s.group)
+                (s: any) => Student.build({ id: s.id, name: s.name, age: s.age, group: s.group })
             );
             this.emit(EVENTS.DATA_LOADED, filePath);
-        } catch (error) {
+        } catch (error: any) {
             if (error.code !== 'ENOENT') { // Ignore missing file error
                 if (this.logger) {
                     this.logger.log(`Error loading data from ${filePath}:`, error.message);
@@ -62,5 +66,3 @@ class StudentManager extends EventEmitter {
         }
     }
 }
-
-module.exports = StudentManager;

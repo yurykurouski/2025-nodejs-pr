@@ -1,8 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { Logger } from './Logger';
 
-class BackupReporter {
-    constructor(backupDir, logger) {
+export class BackupReporter {
+    backupDir: string;
+    logger: Logger;
+
+    constructor(backupDir: string, logger: Logger) {
         this.backupDir = backupDir;
         this.logger = logger;
     }
@@ -18,22 +22,30 @@ class BackupReporter {
 
             const stats = await this.analyzeBackups(files);
             this.formatReport(stats, files);
-        } catch (error) {
+        } catch (error: any) {
             this.logger.log('Error generating backup report:', error.message);
         }
     }
 
     async getBackupFiles() {
+        // Check if directory exists first
+        try {
+            await fs.promises.access(this.backupDir);
+        } catch {
+            this.logger.log(`Backup directory ${this.backupDir} does not exist.`);
+            return [];
+        }
+
         const files = await fs.promises.readdir(this.backupDir);
         return files.filter(file => file.endsWith('.backup.json'));
     }
 
-    parseTimestampFromFilename(filename) {
+    parseTimestampFromFilename(filename: string): Date | null {
         // Extract timestamp from filename
         const match = filename.match(/students_(.+)\.backup\.json/);
         if (match) {
             // Convert back from filename format to ISO format
-            const timestamp = match[1].replace(/-/g, (match, offset, string) => {
+            const timestamp = match[1].replace(/-/g, (match, offset) => {
                 if (offset < 10) return '-'; // Date part
                 if (offset === 10) return 'T'; // T separator
                 if (offset === 13 || offset === 16) return ':'; // Time colons
@@ -45,9 +57,9 @@ class BackupReporter {
         return null;
     }
 
-    getLatestBackup(files) {
-        let latest = null;
-        let latestDate = null;
+    getLatestBackup(files: string[]) {
+        let latest: string | null = null;
+        let latestDate: Date | null = null;
 
         for (const file of files) {
             const date = this.parseTimestampFromFilename(file);
@@ -60,8 +72,8 @@ class BackupReporter {
         return { filename: latest, date: latestDate };
     }
 
-    async analyzeBackups(files) {
-        const studentCounts = {};
+    async analyzeBackups(files: string[]) {
+        const studentCounts: Record<string, number> = {};
         let totalStudents = 0;
 
         for (const file of files) {
@@ -92,12 +104,12 @@ class BackupReporter {
         };
     }
 
-    formatReport(stats, files) {
+    formatReport(stats: { studentStats: any[], averageStudents: number }, files: string[]) {
         this.logger.log('\n=== Backup Report ===');
         this.logger.log(`Amount of backup files: ${files.length}`);
 
         const latest = this.getLatestBackup(files);
-        if (latest.filename) {
+        if (latest.filename && latest.date) {
             this.logger.log(`Latest backup: ${latest.filename}`);
             this.logger.log(`Created at: ${latest.date.toLocaleString()}`);
         }
@@ -109,5 +121,3 @@ class BackupReporter {
         this.logger.log('===================\n');
     }
 }
-
-module.exports = BackupReporter;

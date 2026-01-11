@@ -1,4 +1,4 @@
-const EVENTS = {
+export const EVENTS = {
     STUDENT_ADDED: 'STUDENT_ADDED',
     STUDENT_REMOVED: 'STUDENT_REMOVED',
     DATA_LOADED: 'DATA_LOADED',
@@ -6,5 +6,3 @@ const EVENTS = {
     BACKUP_CREATED: 'BACKUP_CREATED',
     BACKUP_FAILED: 'BACKUP_FAILED',
 };
-
-module.exports = EVENTS;

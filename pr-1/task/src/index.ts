@@ -1,14 +1,14 @@
-const path = require('path');
-const StudentManager = require('./StudentManager');
-const Logger = require('./Logger');
-const demo = require('./demo');
-const { parseArgs, delay } = require('./utils');
-const EventObserver = require('./EventObserver');
-const BackupService = require('./BackupService');
-const BackupReporter = require('./BackupReporter');
+import path from 'path';
+import { StudentManager } from './StudentManager';
+import { Logger } from './Logger';
+import { demo } from './demo';
+import { parseArgs, delay } from './utils';
+import { EventObserver } from './EventObserver';
+import { BackupService } from './BackupService';
+import { BackupReporter } from './BackupReporter';
 
-const DATA_FILE = path.join(__dirname, 'students.json');
-const BACKUP_DIR = path.join(__dirname, 'backups');
+const DATA_FILE = path.join(__dirname, '..', 'students.json');
+const BACKUP_DIR = path.join(__dirname, '..', 'backups');
 
 (async function main() {
   const { verbose, quiet } = parseArgs();

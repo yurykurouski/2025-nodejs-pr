@@ -1,7 +1,14 @@
-const { EVENTS } = require('./constants');
+import { EVENTS } from './constants';
+import { StudentManager } from './StudentManager';
+import { BackupService } from './BackupService';
+import { Logger } from './Logger';
 
-class EventObserver {
-    constructor(studentManager, backupService, logger) {
+export class EventObserver {
+    studentManager: StudentManager;
+    backupService: BackupService;
+    logger: Logger;
+
+    constructor(studentManager: StudentManager, backupService: BackupService, logger: Logger) {
         this.studentManager = studentManager;
         this.backupService = backupService;
         this.logger = logger;
@@ -32,9 +39,11 @@ class EventObserver {
         });
 
         this.backupService.on(EVENTS.BACKUP_FAILED, (error) => {
-            this.logger.log('Event: Backup failed:', error.message);
+            if (error instanceof Error) {
+                this.logger.log('Event: Backup failed:', error.message);
+            } else {
+                this.logger.log('Event: Backup failed:', String(error));
+            }
         });
     }
 }
-
-module.exports = EventObserver;

@@ -1,8 +1,10 @@
-const Student = require('./Student');
+import { StudentManager } from './StudentManager';
+import { Logger } from './Logger';
+import Student from './models/Student';
 
-function demo(manager, logger) {
+export function demo(manager: StudentManager, logger: Logger) {
     //adding a new student
-    const newStudent = new Student('4', 'Alice Wonderland', 19, 1);
+    const newStudent = Student.build({ id: 4, name: 'Alice Wonderland', age: 19, group: '1' });
     logger.log('Adding new student:', newStudent);
     manager.addStudent(newStudent);
 
@@ -10,7 +12,7 @@ function demo(manager, logger) {
 
     logger.log('Average Age:', manager.calculateAverageAge());
 
-    const studentId = '1';
+    const studentId = 1;
     const student = manager.getStudentById(studentId);
     if (student) {
         logger.log(`Student with ID ${studentId}:`, student);
@@ -18,9 +20,7 @@ function demo(manager, logger) {
         logger.log(`Student with ID ${studentId} not found.`);
     }
 
-    const group = 2;
+    const group = '2';
     const studentsInGroup = manager.getStudentsByGroup(group);
     logger.log(`Students in group ${group}:`, studentsInGroup);
 }
-
-module.exports = demo 

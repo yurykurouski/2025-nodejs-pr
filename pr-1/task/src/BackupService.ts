@@ -1,16 +1,26 @@
-const fs = require('fs');
-const path = require('path');
-const EventEmitter = require('events');
-const { EVENTS } = require('./constants');
+import fs from 'fs';
+import path from 'path';
+import { EventEmitter } from 'events';
+import { EVENTS } from './constants';
+import { StudentManager } from './StudentManager';
+import { Logger } from './Logger';
 
-class BackupService extends EventEmitter {
-    constructor(studentManager, logger, backupInterval = 5000) {
+export class BackupService extends EventEmitter {
+    studentManager: StudentManager;
+    logger: Logger;
+    backupInterval: number;
+    intervalId: NodeJS.Timeout | null;
+    backupDir: string;
+    isBackupInProgress: boolean;
+    skippedIntervals: number;
+
+    constructor(studentManager: StudentManager, logger: Logger, backupInterval = 5000) {
         super();
         this.studentManager = studentManager;
         this.logger = logger;
         this.backupInterval = backupInterval;
         this.intervalId = null;
-        this.backupDir = path.join(__dirname, 'backups');
+        this.backupDir = path.join(__dirname, '..', '..', 'backups'); // Adjust path as src is nested
         this.isBackupInProgress = false;
         this.skippedIntervals = 0;
     }
@@ -69,5 +79,3 @@ class BackupService extends EventEmitter {
         }
     }
 }
-
-module.exports = BackupService;
