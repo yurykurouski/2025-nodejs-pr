@@ -1,5 +1,5 @@
 import sequelize from '../config/database';
-import '../models/Student'; // Import model to ensure it's registered
+import '../models';
 
 async function migrate() {
     try {
