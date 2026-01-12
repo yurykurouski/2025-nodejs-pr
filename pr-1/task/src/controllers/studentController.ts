@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Student from '../models/Student';
+import { AuthRequest } from '../middleware/authMiddleware';
 
 export const getAllStudents = async (req: Request, res: Response) => {
     try {
@@ -25,10 +26,12 @@ export const getStudentById = async (req: Request, res: Response) => {
     }
 };
 
-export const createStudent = async (req: Request, res: Response) => {
+export const createStudent = async (req: AuthRequest, res: Response) => {
     try {
         const { name, age, group } = req.body;
-        const newStudent = await Student.create({ name, age, group });
+        const userId = req.user?.id;
+
+        const newStudent = await Student.create({ name, age, group, userId });
         res.status(201).json(newStudent);
     } catch (error) {
         console.error('Error creating student:', error);

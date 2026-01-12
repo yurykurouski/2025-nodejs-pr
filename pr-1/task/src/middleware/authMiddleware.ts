@@ -8,7 +8,7 @@ interface UserPayload {
     role: number;
 }
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
     user?: UserPayload
 }
 
