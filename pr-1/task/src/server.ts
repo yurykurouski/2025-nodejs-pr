@@ -1,7 +1,9 @@
 import express from 'express';
 import sequelize from './config/database';
 import studentRoutes from './routes/studentRoutes';
+import authRoutes from './routes/authRoutes';
 import dotenv from 'dotenv';
+import { authenticate } from './middleware/authMiddleware';
 
 dotenv.config();
 
@@ -10,7 +12,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use('/students', studentRoutes);
+app.use('/auth', authRoutes);
+app.use('/students', authenticate, studentRoutes); // Protect all student routes
 
 app.get('/', (_, res) => {
     res.send('Student Management API is running.');
