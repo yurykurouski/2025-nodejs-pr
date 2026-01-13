@@ -1,5 +1,6 @@
 # Assignment 4 - Working with Databases
 
+> **NOTE**: All relevant code is placed in the `pr-1/task` directory.
 
 ### Configure Environment
 Copy the example environment file:
