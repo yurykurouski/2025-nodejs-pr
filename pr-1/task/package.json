@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/src/server.js",
-    "dev": "nodemon src/server.ts",
-    "build": "tsc",
+    "start": "nodemon src/server.ts",
+    "compose": "docker compose up -d",
     "migrate": "ts-node src/scripts/migrate.ts",
     "test": "jest"
   },
