@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use('/students', studentRoutes);
+app.use('/api/students', studentRoutes);
 
 app.get('/', (_, res) => {
     res.send('Student Management API is running.');

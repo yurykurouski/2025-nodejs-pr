@@ -24,7 +24,7 @@ const BACKUP_DIR = path.join(__dirname, '..', 'backups');
 
   backupService.start();
 
-  demo(manager, logger);
+  await demo(manager, logger);
 
   // Keep process alive to demonstrate backup (e.g., 6 seconds for a 5s interval)
   logger.log('Waiting for backup service...');

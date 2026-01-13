@@ -1,69 +1,113 @@
 import { Request, Response } from 'express';
-import Student from '../models/Student';
+import { StudentManager } from '../StudentManager';
+import { Logger } from '../Logger';
 
-export const getAllStudents = async (req: Request, res: Response) => {
-    try {
-        const students = await Student.findAll();
-        res.json(students);
-    } catch (error) {
-        console.error('Error fetching students:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+
+export class StudentController {
+    studentManager: StudentManager;
+
+    constructor() {
+        this.studentManager = new StudentManager(new Logger());
     }
-};
 
-export const getStudentById = async (req: Request, res: Response) => {
-    try {
-        const student = await Student.findByPk(req.params.id as string);
-        if (!student) {
-            res.status(404).json({ error: 'Student not found' });
-            return;
+    getAllStudents = async (req: Request, res: Response) => {
+        try {
+            const students = await this.studentManager.getAllStudents();
+            res.json(students);
+        } catch (error) {
+            console.error('Error fetching students:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
         }
-        res.json(student);
-    } catch (error) {
-        console.error('Error fetching student:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
+    };
 
-export const createStudent = async (req: Request, res: Response) => {
-    try {
-        const { name, age, group } = req.body;
-        const newStudent = await Student.create({ name, age, group });
-        res.status(201).json(newStudent);
-    } catch (error) {
-        console.error('Error creating student:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
-
-export const updateStudent = async (req: Request, res: Response) => {
-    try {
-        const student = await Student.findByPk(req.params.id as string);
-        if (!student) {
-            res.status(404).json({ error: 'Student not found' });
-            return;
+    getStudentById = async (req: Request, res: Response) => {
+        try {
+            const id = parseInt(req.params.id as string, 10);
+            const student = await this.studentManager.getStudentById(id);
+            if (!student) {
+                res.status(404).json({ error: 'Student not found' });
+                return;
+            }
+            res.json(student);
+        } catch (error) {
+            console.error('Error fetching student:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
         }
+    };
 
-        await student.update(req.body);
-        res.json(student);
-    } catch (error) {
-        console.error('Error updating student:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
-
-export const deleteStudent = async (req: Request, res: Response) => {
-    try {
-        const student = await Student.findByPk(req.params.id as string);
-        if (!student) {
-            res.status(404).json({ error: 'Student not found' });
-            return;
+    createStudent = async (req: Request, res: Response) => {
+        try {
+            // Validation is done in middleware, so just create
+            const newStudent = await this.studentManager.addStudent(req.body);
+            res.status(201).json(newStudent);
+        } catch (error) {
+            console.error('Error creating student:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
         }
+    };
 
-        await student.destroy();
-        res.status(204).send();
-    } catch (error) {
-        console.error('Error deleting student:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
+    updateStudent = async (req: Request, res: Response) => {
+        try {
+            const id = parseInt(req.params.id as string, 10);
+            const student = await this.studentManager.updateStudent(id, req.body);
+
+            if (!student) {
+                res.status(404).json({ error: 'Student not found' });
+                return;
+            }
+
+            res.json(student);
+        } catch (error) {
+            console.error('Error updating student:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    };
+
+    deleteStudent = async (req: Request, res: Response) => {
+        try {
+            const id = parseInt(req.params.id as string, 10);
+            const success = await this.studentManager.removeStudent(id);
+
+            if (!success) {
+                res.status(404).json({ error: 'Student not found' });
+                return;
+            }
+
+            res.status(204).send();
+        } catch (error) {
+            console.error('Error deleting student:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    };
+
+    replaceAllStudents = async (req: Request, res: Response) => {
+        try {
+            const students = await this.studentManager.replaceAllStudents(req.body);
+            res.status(201).json(students);
+        } catch (error) {
+            console.error('Error replacing students:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    };
+
+    getStudentsByGroup = async (req: Request, res: Response) => {
+        try {
+            const group = req.params.group as string;
+            const students = await this.studentManager.getStudentsByGroup(group);
+            res.json(students);
+        } catch (error) {
+            console.error('Error fetching students by group:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    };
+
+    getAverageAge = async (req: Request, res: Response) => {
+        try {
+            const averageAge = await this.studentManager.calculateAverageAge();
+            res.json({ averageAge });
+        } catch (error) {
+            console.error('Error calculating average age:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    };
+}

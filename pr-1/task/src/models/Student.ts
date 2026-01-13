@@ -5,14 +5,14 @@ interface StudentAttributes {
     id?: number;
     name: string;
     age: number;
-    group: string;
+    group: number;
 }
 
 class Student extends Model<StudentAttributes> implements StudentAttributes {
     public id!: number;
     public name!: string;
     public age!: number;
-    public group!: string;
+    public group!: number;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -33,7 +33,7 @@ Student.init({
         allowNull: false,
     },
     group: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
 }, {

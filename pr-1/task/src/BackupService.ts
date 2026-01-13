@@ -63,7 +63,7 @@ export class BackupService extends EventEmitter {
             // Ensure backup directory exists
             await fs.promises.mkdir(this.backupDir, { recursive: true });
 
-            const students = this.studentManager.getAllStudents();
+            const students = await this.studentManager.getAllStudents();
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             const filename = `students_${timestamp}.backup.json`;
             const filePath = path.join(this.backupDir, filename);
