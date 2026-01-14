@@ -1,7 +1,6 @@
 import path from 'path';
 import { StudentManager } from './StudentManager';
 import { Logger } from './Logger';
-import { demo } from './demo';
 import { parseArgs, delay } from './utils';
 import { EventObserver } from './EventObserver';
 import { BackupService } from './BackupService';
@@ -23,8 +22,6 @@ const BACKUP_DIR = path.join(__dirname, '..', 'backups');
   await manager.loadJSON(DATA_FILE);
 
   backupService.start();
-
-  await demo(manager, logger);
 
   // Keep process alive to demonstrate backup (e.g., 6 seconds for a 5s interval)
   logger.log('Waiting for backup service...');
