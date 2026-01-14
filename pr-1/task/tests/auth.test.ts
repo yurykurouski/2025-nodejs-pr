@@ -19,7 +19,7 @@ describe('Auth Endpoints', () => {
 
     it('should register a new user', async () => {
         const res = await request(app)
-            .post('/auth/register')
+            .post('/api/auth/register')
             .send({
                 email: 'test@example.com',
                 password: 'password123',
@@ -35,7 +35,7 @@ describe('Auth Endpoints', () => {
 
     it('should login an existing user', async () => {
         const res = await request(app)
-            .post('/auth/login')
+            .post('/api/auth/login')
             .send({
                 email: 'test@example.com',
                 password: 'password123'
@@ -47,7 +47,7 @@ describe('Auth Endpoints', () => {
 
     it('should fail login with wrong password', async () => {
         const res = await request(app)
-            .post('/auth/login')
+            .post('/api/auth/login')
             .send({
                 email: 'test@example.com',
                 password: 'wrongpassword'
@@ -63,7 +63,7 @@ describe('Protected Routes', () => {
     beforeAll(async () => {
         // Register a user to get token
         const res = await request(app)
-            .post('/auth/register')
+            .post('/api/auth/register')
             .send({
                 email: 'student@example.com',
                 password: 'password123',
@@ -75,7 +75,7 @@ describe('Protected Routes', () => {
 
     it('should access protected route with token', async () => {
         const res = await request(app)
-            .get('/students')
+            .get('/api/students')
             .set('Authorization', `Bearer ${token}`);
 
         expect(res.status).toEqual(200);
@@ -83,7 +83,7 @@ describe('Protected Routes', () => {
 
     it('should deny access without token', async () => {
         const res = await request(app)
-            .get('/students');
+            .get('/api/students');
 
         expect(res.status).toEqual(401);
     });
