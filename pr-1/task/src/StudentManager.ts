@@ -23,7 +23,7 @@ export class StudentManager extends EventEmitter {
         }
     }
 
-    async removeStudent(id: number) {
+    async removeStudent(id: string) {
         try {
             const student = await Student.findByPk(id);
             if (student) {
@@ -38,7 +38,7 @@ export class StudentManager extends EventEmitter {
         }
     }
 
-    async getStudentById(id: number) {
+    async getStudentById(id: string) {
         return await Student.findByPk(id);
     }
 
@@ -57,7 +57,7 @@ export class StudentManager extends EventEmitter {
         return totalAge / students.length;
     }
 
-    async updateStudent(id: number, updateData: any) {
+    async updateStudent(id: string, updateData: any) {
         try {
             const student = await Student.findByPk(id);
             if (student) {

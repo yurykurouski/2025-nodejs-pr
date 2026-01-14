@@ -8,10 +8,6 @@ import Grade from './Grade';
 Role.hasMany(User, { foreignKey: 'roleId' });
 User.belongsTo(Role, { foreignKey: 'roleId' });
 
-// User <-> Student
-User.hasOne(Student, { foreignKey: 'userId' });
-Student.belongsTo(User, { foreignKey: 'userId' });
-
 // Student <-> Grade
 Student.hasMany(Grade, { foreignKey: 'studentId' });
 Grade.belongsTo(Student, { foreignKey: 'studentId' });

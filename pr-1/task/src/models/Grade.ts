@@ -5,7 +5,7 @@ import Subject from './Subject';
 
 interface GradeAttributes {
     id: number;
-    studentId: number;
+    studentId: string;
     subjectId: number;
     grade: number;
     evaluatedAt: Date;
@@ -15,7 +15,7 @@ interface GradeCreationAttributes extends Optional<GradeAttributes, 'id' | 'eval
 
 class Grade extends Model<GradeAttributes, GradeCreationAttributes> implements GradeAttributes {
     public id!: number;
-    public studentId!: number;
+    public studentId!: string;
     public subjectId!: number;
     public grade!: number;
     public evaluatedAt!: Date;
@@ -31,7 +31,7 @@ Grade.init({
         primaryKey: true,
     },
     studentId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
             model: Student,

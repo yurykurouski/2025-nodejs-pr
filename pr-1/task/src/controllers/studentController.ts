@@ -22,12 +22,14 @@ export class StudentController {
 
     getStudentById = async (req: Request, res: Response) => {
         try {
-            const id = parseInt(req.params.id as string, 10);
+            const id = req.params.id as string;
             const student = await this.studentManager.getStudentById(id);
+
             if (!student) {
                 res.status(404).json({ error: 'Student not found' });
                 return;
             }
+
             res.json(student);
         } catch (error) {
             console.error('Error fetching student:', error);
@@ -37,7 +39,6 @@ export class StudentController {
 
     createStudent = async (req: Request, res: Response) => {
         try {
-            // Validation is done in middleware, so just create
             const newStudent = await this.studentManager.addStudent(req.body);
             res.status(201).json(newStudent);
         } catch (error) {
@@ -48,7 +49,7 @@ export class StudentController {
 
     updateStudent = async (req: Request, res: Response) => {
         try {
-            const id = parseInt(req.params.id as string, 10);
+            const id = req.params.id as string;
             const student = await this.studentManager.updateStudent(id, req.body);
 
             if (!student) {
@@ -65,7 +66,7 @@ export class StudentController {
 
     deleteStudent = async (req: Request, res: Response) => {
         try {
-            const id = parseInt(req.params.id as string, 10);
+            const id = req.params.id as string;
             const success = await this.studentManager.removeStudent(id);
 
             if (!success) {

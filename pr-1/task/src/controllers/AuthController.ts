@@ -5,7 +5,7 @@ import { User, Role } from '../models';
 
 const generateToken = (user: User) => {
     return jwt.sign(
-        { id: user.id, email: user.email, role: user.roleId }, // TODO: Fetch role name if needed, currently sending roleId
+        { id: user.id, email: user.email, role: user.roleId },
         process.env.JWT_SECRET || 'secret_key',
         { expiresIn: '24h' }
     );

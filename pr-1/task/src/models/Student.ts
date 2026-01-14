@@ -23,12 +23,9 @@ class Student extends Model<StudentAttributes> implements StudentAttributes {
 Student.init({
     id: {
         type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
         allowNull: false,
-        references: {
-            model: User,
-            key: 'id',
-        }
     },
     name: {
         type: DataTypes.STRING,

@@ -1,5 +1,5 @@
 import express from 'express';
-import { StudentController } from '../controllers/StudentController';
+import { StudentController } from '../controllers/studentController';
 import { validateStudent, validateUpdateStudent } from '../middleware/validation';
 
 const router = express.Router();
