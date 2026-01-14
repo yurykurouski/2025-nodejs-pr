@@ -2,18 +2,18 @@ import { StudentManager } from './StudentManager';
 import { Logger } from './Logger';
 import Student from './models/Student';
 
-export function demo(manager: StudentManager, logger: Logger) {
+export async function demo(manager: StudentManager, logger: Logger) {
     //adding a new student
-    const newStudent = Student.build({ id: 4, name: 'Alice Wonderland', age: 19, group: '1' });
-    logger.log('Adding new student:', newStudent);
-    manager.addStudent(newStudent);
+    const newStudentData = { name: 'Alice Wonderland', age: 19, group: '1' };
+    logger.log('Adding new student:', newStudentData);
+    await manager.addStudent(newStudentData);
 
-    logger.log('All Students:', manager.getAllStudents());
+    logger.log('All Students:', await manager.getAllStudents());
 
-    logger.log('Average Age:', manager.calculateAverageAge());
+    logger.log('Average Age:', await manager.calculateAverageAge());
 
     const studentId = 1;
-    const student = manager.getStudentById(studentId);
+    const student = await manager.getStudentById(studentId);
     if (student) {
         logger.log(`Student with ID ${studentId}:`, student);
     } else {
@@ -21,6 +21,6 @@ export function demo(manager: StudentManager, logger: Logger) {
     }
 
     const group = '2';
-    const studentsInGroup = manager.getStudentsByGroup(group);
+    const studentsInGroup = await manager.getStudentsByGroup(group);
     logger.log(`Students in group ${group}:`, studentsInGroup);
 }

@@ -12,8 +12,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use('/auth', authRoutes);
-app.use('/students', authenticate, studentRoutes); // Protect all student routes
+app.use('/api/auth', authRoutes);
+app.use('/api/students', authenticate, studentRoutes); // Protect all student routes
 
 app.get('/', (_, res) => {
     res.send('Student Management API is running.');

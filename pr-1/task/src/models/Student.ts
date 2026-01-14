@@ -4,19 +4,17 @@ import sequelize from '../config/database';
 import User from './User';
 
 interface StudentAttributes {
-    id?: number;
+    id?: string;
     name: string;
     age: number;
-    group: string;
-    userId?: string;
+    group: number;
 }
 
 class Student extends Model<StudentAttributes> implements StudentAttributes {
-    public id!: number;
+    public id!: string;
     public name!: string;
     public age!: number;
-    public group!: string;
-    public userId!: string;
+    public group!: number;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -24,9 +22,13 @@ class Student extends Model<StudentAttributes> implements StudentAttributes {
 
 Student.init({
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
         primaryKey: true,
+        allowNull: false,
+        references: {
+            model: User,
+            key: 'id',
+        }
     },
     name: {
         type: DataTypes.STRING,
@@ -37,17 +39,9 @@ Student.init({
         allowNull: false,
     },
     group: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
-    userId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-            model: User,
-            key: 'id',
-        }
-    }
 }, {
     sequelize,
     tableName: 'students',

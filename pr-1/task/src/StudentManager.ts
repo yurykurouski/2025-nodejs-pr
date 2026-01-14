@@ -5,45 +5,75 @@ import { EVENTS } from './constants';
 import { Logger } from './Logger';
 
 export class StudentManager extends EventEmitter {
-    students: Student[];
     logger: Logger;
 
     constructor(logger: Logger) {
         super();
-        this.students = [];
         this.logger = logger;
     }
 
-    addStudent(student: Student) {
-        this.students.push(student);
-        this.emit(EVENTS.STUDENT_ADDED, student);
+    async addStudent(studentData: any) {
+        try {
+            const student = await Student.create(studentData);
+            this.emit(EVENTS.STUDENT_ADDED, student);
+            return student;
+        } catch (error: any) {
+            this.logger.log('Error adding student:', error.message);
+            throw error;
+        }
     }
 
-    removeStudent(id: number) {
-        this.students = this.students.filter(student => student.id !== id);
-        this.emit(EVENTS.STUDENT_REMOVED, id);
+    async removeStudent(id: number) {
+        try {
+            const student = await Student.findByPk(id);
+            if (student) {
+                await student.destroy();
+                this.emit(EVENTS.STUDENT_REMOVED, id);
+                return true;
+            }
+            return false;
+        } catch (error: any) {
+            this.logger.log('Error removing student:', error.message);
+            throw error;
+        }
     }
 
-    getStudentById(id: number) {
-        return this.students.find(student => student.id === id);
+    async getStudentById(id: number) {
+        return await Student.findByPk(id);
     }
 
-    getStudentsByGroup(group: string) {
-        return this.students.filter(student => student.group === group);
+    async getStudentsByGroup(group: string) {
+        return await Student.findAll({ where: { group } });
     }
 
-    getAllStudents() {
-        return this.students;
+    async getAllStudents() {
+        return await Student.findAll();
     }
 
-    calculateAverageAge() {
-        if (this.students.length === 0) return 0;
-        const totalAge = this.students.reduce((sum, student) => sum + student.age, 0);
-        return totalAge / this.students.length;
+    async calculateAverageAge() {
+        const students = await Student.findAll();
+        if (students.length === 0) return 0;
+        const totalAge = students.reduce((sum, student) => sum + student.age, 0);
+        return totalAge / students.length;
+    }
+
+    async updateStudent(id: number, updateData: any) {
+        try {
+            const student = await Student.findByPk(id);
+            if (student) {
+                await student.update(updateData);
+                return student;
+            }
+            return null;
+        } catch (error: any) {
+            this.logger.log('Error updating student:', error.message);
+            throw error;
+        }
     }
 
     async saveToJSON(filePath: string) {
-        const data = JSON.stringify(this.students, null, 2);
+        const students = await this.getAllStudents();
+        const data = JSON.stringify(students, null, 2);
         await fs.promises.writeFile(filePath, data, 'utf8');
         this.emit(EVENTS.DATA_SAVED, filePath);
     }
@@ -52,9 +82,25 @@ export class StudentManager extends EventEmitter {
         try {
             const data = await fs.promises.readFile(filePath, 'utf8');
             const parsedData = JSON.parse(data);
-            this.students = parsedData.map(
-                (s: any) => Student.build({ id: s.id, name: s.name, age: s.age, group: s.group })
-            );
+            // Assuming we want to populate DB from JSON? 
+            // Or maybe just for the demo run? 
+            // The prompt implies unified logic.
+            // If we load JSON, we should probably upsert or bulk create?
+            // For simplicity, let's just create them if they don't exist or just bulkCreate (might duplicate if IDs clash or auto-increment ignored)
+            // The original code reset `this.students`. 
+            // For DB, maybe clear and reload? Or just add.
+            // Let's iterate and create.
+
+            for (const s of parsedData) {
+                // Try to create, ignoring ID if it's auto-increment or respecting it?
+                // Student model has id primary key autoIncrement: true.
+                // We can omit ID to let DB generate, or specify if we want to restore exact state.
+                // `Student.build` usage suggests `s` has id.
+
+                // Ideally:
+                await Student.upsert(s);
+            }
+
             this.emit(EVENTS.DATA_LOADED, filePath);
         } catch (error: any) {
             if (error.code !== 'ENOENT') { // Ignore missing file error
@@ -62,7 +108,18 @@ export class StudentManager extends EventEmitter {
                     this.logger.log(`Error loading data from ${filePath}:`, error.message);
                 }
             }
-            this.students = [];
+            // Do not reset to empty list, as we are in DB mode
+        }
+    }
+    async replaceAllStudents(students: any[]) {
+        try {
+            await Student.destroy({ truncate: true, cascade: true, restartIdentity: true });
+            const createdStudents = await Student.bulkCreate(students);
+            this.emit(EVENTS.DATA_LOADED, 'API Bulk Replace'); // Using DATA_LOADED as a proxy for "mass update"
+            return createdStudents;
+        } catch (error: any) {
+            this.logger.log('Error replacing all students:', error.message);
+            throw error;
         }
     }
 }
