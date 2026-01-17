@@ -5,9 +5,11 @@ import { Logger } from '../Logger';
 
 export class StudentController {
     studentManager: StudentManager;
+    logger: Logger;
 
     constructor() {
-        this.studentManager = new StudentManager(new Logger());
+        this.logger = new Logger();
+        this.studentManager = new StudentManager(this.logger);
     }
 
     getAllStudents = async (req: Request, res: Response) => {
@@ -15,7 +17,7 @@ export class StudentController {
             const students = await this.studentManager.getAllStudents();
             res.json(students);
         } catch (error) {
-            console.error('Error fetching students:', error);
+            this.logger.error('Error fetching students:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     };
@@ -32,7 +34,7 @@ export class StudentController {
 
             res.json(student);
         } catch (error) {
-            console.error('Error fetching student:', error);
+            this.logger.error('Error fetching student:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     };
@@ -42,7 +44,7 @@ export class StudentController {
             const newStudent = await this.studentManager.addStudent(req.body);
             res.status(201).json(newStudent);
         } catch (error) {
-            console.error('Error creating student:', error);
+            this.logger.error('Error creating student:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     };
@@ -59,7 +61,7 @@ export class StudentController {
 
             res.json(student);
         } catch (error) {
-            console.error('Error updating student:', error);
+            this.logger.error('Error updating student:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     };
@@ -76,7 +78,7 @@ export class StudentController {
 
             res.status(204).send();
         } catch (error) {
-            console.error('Error deleting student:', error);
+            this.logger.error('Error deleting student:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     };
@@ -86,7 +88,7 @@ export class StudentController {
             const students = await this.studentManager.replaceAllStudents(req.body);
             res.status(201).json(students);
         } catch (error) {
-            console.error('Error replacing students:', error);
+            this.logger.error('Error replacing students:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     };
@@ -97,7 +99,7 @@ export class StudentController {
             const students = await this.studentManager.getStudentsByGroup(group);
             res.json(students);
         } catch (error) {
-            console.error('Error fetching students by group:', error);
+            this.logger.error('Error fetching students by group:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     };
@@ -107,7 +109,7 @@ export class StudentController {
             const averageAge = await this.studentManager.calculateAverageAge();
             res.json({ averageAge });
         } catch (error) {
-            console.error('Error calculating average age:', error);
+            this.logger.error('Error calculating average age:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     };

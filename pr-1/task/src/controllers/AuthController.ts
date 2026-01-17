@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User, Role } from '../models';
+import { Logger } from '../Logger';
+
+const logger = new Logger();
 
 const generateToken = (user: User) => {
     return jwt.sign(
@@ -51,7 +54,7 @@ export const register = async (req: Request, res: Response) => {
         });
 
     } catch (error) {
-        console.error('Registration error:', error);
+        logger.error('Registration error:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -78,7 +81,7 @@ export const login = async (req: Request, res: Response) => {
         });
 
     } catch (error) {
-        console.error('Login error:', error);
+        logger.error('Login error:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

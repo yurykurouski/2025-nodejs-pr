@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { User, Role } from '../models';
+import { Logger } from '../Logger';
+
+const logger = new Logger();
 
 interface UserPayload {
     id: string;
@@ -48,7 +51,7 @@ export const authorize = (roles: string[]) => {
 
             next();
         } catch (error) {
-            console.error('Authorization error:', error);
+            logger.error('Authorization error:', error);
             return res.status(500).json({ message: 'Internal server error' });
         }
     };

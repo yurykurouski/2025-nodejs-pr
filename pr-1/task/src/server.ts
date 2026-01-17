@@ -4,11 +4,19 @@ import studentRoutes from './routes/studentRoutes';
 import authRoutes from './routes/authRoutes';
 import dotenv from 'dotenv';
 import { authenticate } from './middleware/authMiddleware';
+import statusMonitor from 'express-status-monitor';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
+import { Logger } from './Logger';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const logger = new Logger();
+
+app.use(statusMonitor());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
 
@@ -22,13 +30,13 @@ app.get('/', (_, res) => {
 async function startServer() {
     try {
         await sequelize.authenticate();
-        console.log('Database connected...');
+        logger.log('Database connected...');
 
         app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
+            logger.log(`Server is running on port ${PORT}`);
         });
     } catch (error) {
-        console.error('Unable to connect to the database:', error);
+        logger.error('Unable to connect to the database:', error);
     }
 }
 

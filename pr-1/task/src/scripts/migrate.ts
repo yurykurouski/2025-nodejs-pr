@@ -2,8 +2,11 @@ import { Client } from 'pg';
 import sequelize from '../config/database';
 import '../models/Student'; // Import model to ensure it's registered
 import dotenv from 'dotenv';
+import { Logger } from '../Logger';
 
 dotenv.config();
+
+const logger = new Logger();
 
 async function createDatabaseIfNotExists() {
     const dbName = process.env.DB_NAME as string;
@@ -20,14 +23,14 @@ async function createDatabaseIfNotExists() {
         const res = await client.query(`SELECT 1 FROM pg_database WHERE datname = $1`, [dbName]);
 
         if (res.rowCount === 0) {
-            console.log(`Database "${dbName}" not found. Creating...`);
+            logger.log(`Database "${dbName}" not found. Creating...`);
             await client.query(`CREATE DATABASE "${dbName}"`);
-            console.log(`Database "${dbName}" created successfully.`);
+            logger.log(`Database "${dbName}" created successfully.`);
         } else {
-            console.log(`Database "${dbName}" already exists.`);
+            logger.log(`Database "${dbName}" already exists.`);
         }
     } catch (error) {
-        console.error('Error checking/creating database:', error);
+        logger.error('Error checking/creating database:', error);
         throw error;
     } finally {
         await client.end();
@@ -36,16 +39,16 @@ async function createDatabaseIfNotExists() {
 
 async function migrate() {
     try {
-        console.log('Starting migration...');
+        logger.log('Starting migration...');
 
         await createDatabaseIfNotExists();
 
         await sequelize.authenticate(); // Verify connection to the new/existing DB
         await sequelize.sync({ alter: true });
-        console.log('Migration successful: Tables created or updated.');
+        logger.log('Migration successful: Tables created or updated.');
         process.exit(0);
     } catch (error) {
-        console.error('Migration failed:', error);
+        logger.error('Migration failed:', error);
         process.exit(1);
     }
 }

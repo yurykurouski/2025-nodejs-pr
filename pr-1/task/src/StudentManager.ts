@@ -82,22 +82,8 @@ export class StudentManager extends EventEmitter {
         try {
             const data = await fs.promises.readFile(filePath, 'utf8');
             const parsedData = JSON.parse(data);
-            // Assuming we want to populate DB from JSON? 
-            // Or maybe just for the demo run? 
-            // The prompt implies unified logic.
-            // If we load JSON, we should probably upsert or bulk create?
-            // For simplicity, let's just create them if they don't exist or just bulkCreate (might duplicate if IDs clash or auto-increment ignored)
-            // The original code reset `this.students`. 
-            // For DB, maybe clear and reload? Or just add.
-            // Let's iterate and create.
 
             for (const s of parsedData) {
-                // Try to create, ignoring ID if it's auto-increment or respecting it?
-                // Student model has id primary key autoIncrement: true.
-                // We can omit ID to let DB generate, or specify if we want to restore exact state.
-                // `Student.build` usage suggests `s` has id.
-
-                // Ideally:
                 await Student.upsert(s);
             }
 
