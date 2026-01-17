@@ -34,6 +34,14 @@ npm run migrate
 
 > **Note**: This script will automatically create the `students_db` database if it doesn't exist.
 
+### Generate API Documentation
+
+Update the Swagger spec manually (optional, runs automatically on build):
+
+```bash
+npm run swagger
+```
+
 ## Running the Project
 
 Start the development server:
