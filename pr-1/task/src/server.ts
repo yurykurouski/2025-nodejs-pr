@@ -4,9 +4,9 @@ import studentRoutes from "./routes/studentRoutes";
 import authRoutes from "./routes/authRoutes";
 import dotenv from "dotenv";
 import { authenticate } from "./middleware/authMiddleware";
-import statusMonitor from "express-status-monitor";
 import swaggerUi from "swagger-ui-express";
 import { Logger } from "./Logger";
+import compression from "compression";
 const swaggerDocument = require("./config/swagger_output.json");
 
 dotenv.config();
@@ -15,7 +15,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const logger = new Logger();
 
-app.use(statusMonitor());
+app.use(compression());
+
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(express.json());
