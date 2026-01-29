@@ -3,7 +3,7 @@ import sequelize from "./config/database";
 import studentRoutes from "./routes/studentRoutes";
 import authRoutes from "./routes/authRoutes";
 import dotenv from "dotenv";
-import { authenticate } from "./middleware/authMiddleware";
+import { authenticate, authorize } from "./middleware/authMiddleware";
 import swaggerUi from "swagger-ui-express";
 import { Logger } from "./Logger";
 import compression from "compression";
@@ -23,6 +23,11 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+
+// System Monitoring - Restricted to Admin and Moderator
+app.use("/status", authenticate, authorize(["admin", "moderator"]));
+app.use(require("express-status-monitor")());
+
 app.use("/api/students", authenticate, studentRoutes);
 
 app.get("/", (_, res) => {
