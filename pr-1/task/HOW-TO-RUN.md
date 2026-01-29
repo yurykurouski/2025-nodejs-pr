@@ -62,3 +62,20 @@ Build and run the project in production mode:
 ```bash
 npm run prod
 ```
+
+## Live Server
+
+Run the Live Server to serve static files with automatic reload on changes:
+
+```bash
+npm run live
+```
+
+By default, it serves the `target` directory on port `3000`.
+
+To specify a custom directory and port:
+
+```bash
+# Usage: npm run live -- <directory> <port>
+npm run live -- ./public 8080
+```
