@@ -2,6 +2,7 @@ import request from 'supertest';
 import app from '../src/server';
 import sequelize from '../src/config/database';
 import Student from '../src/models/Student';
+import { StudentManager } from '../src/StudentManager';
 
 describe('Student API', () => {
     let token: string;
@@ -160,6 +161,15 @@ describe('Student API', () => {
             const updated = await Student.findByPk(student.id);
             expect(updated?.age).toEqual(26);
         });
+
+        it('should return 404 if student to update not found', async () => {
+            const res = await request(app)
+                .put('/api/students/00000000-0000-0000-0000-000000000000')
+                .set('Authorization', `Bearer ${token}`)
+                .send({ age: 26 });
+
+            expect(res.statusCode).toEqual(404);
+        });
     });
 
     describe('DELETE /api/students/:id (Delete)', () => {
@@ -176,6 +186,14 @@ describe('Student API', () => {
 
             const deleted = await Student.findByPk(student.id);
             expect(deleted).toBeNull();
+        });
+
+        it('should return 404 if student to delete not found', async () => {
+            const res = await request(app)
+                .delete('/api/students/00000000-0000-0000-0000-000000000000')
+                .set('Authorization', `Bearer ${token}`);
+
+            expect(res.statusCode).toEqual(404);
         });
     });
 
@@ -245,6 +263,96 @@ describe('Student API', () => {
 
             expect(res.statusCode).toEqual(200);
             expect(res.body).toEqual({ averageAge: 25 });
+        });
+    });
+
+    describe('Server Error Handling', () => {
+        // Need to restore original implementation after tests
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
+        it('should handle errors when creating student', async () => {
+            jest.spyOn(StudentManager.prototype, 'addStudent').mockRejectedValue(new Error('DB Error'));
+
+            const res = await request(app)
+                .post('/api/students')
+                .set('Authorization', `Bearer ${token}`)
+                .send({ name: 'Error', age: 20, group: 1 });
+
+            expect(res.statusCode).toEqual(500);
+        });
+
+        it('should handle errors when fetching students', async () => {
+            jest.spyOn(StudentManager.prototype, 'getAllStudents').mockRejectedValue(new Error('DB Error'));
+
+            const res = await request(app)
+                .get('/api/students')
+                .set('Authorization', `Bearer ${token}`);
+
+            expect(res.statusCode).toEqual(500);
+        });
+
+        it('should handle errors when fetching average age', async () => {
+            jest.spyOn(StudentManager.prototype, 'calculateAverageAge').mockRejectedValue(new Error('DB Error'));
+
+            const res = await request(app)
+                .get('/api/students/average-age')
+                .set('Authorization', `Bearer ${token}`);
+
+            expect(res.statusCode).toEqual(500);
+        });
+
+        it('should handle errors when getting student by id', async () => {
+            jest.spyOn(StudentManager.prototype, 'getStudentById').mockRejectedValue(new Error('DB Error'));
+
+            const res = await request(app)
+                .get('/api/students/123')
+                .set('Authorization', `Bearer ${token}`);
+
+            expect(res.statusCode).toEqual(500);
+        });
+
+        it('should handle errors when updating student', async () => {
+            jest.spyOn(StudentManager.prototype, 'updateStudent').mockRejectedValue(new Error('DB Error'));
+
+            const res = await request(app)
+                .put('/api/students/123')
+                .set('Authorization', `Bearer ${token}`)
+                .send({ age: 22 });
+
+            expect(res.statusCode).toEqual(500);
+        });
+
+        it('should handle errors when deleting student', async () => {
+            jest.spyOn(StudentManager.prototype, 'removeStudent').mockRejectedValue(new Error('DB Error'));
+
+            const res = await request(app)
+                .delete('/api/students/123')
+                .set('Authorization', `Bearer ${token}`);
+
+            expect(res.statusCode).toEqual(500);
+        });
+
+        it('should handle errors when replacing all students', async () => {
+            jest.spyOn(StudentManager.prototype, 'replaceAllStudents').mockRejectedValue(new Error('DB Error'));
+
+            const res = await request(app)
+                .put('/api/students')
+                .set('Authorization', `Bearer ${token}`)
+                .send([]);
+
+            expect(res.statusCode).toEqual(500);
+        });
+
+        it('should handle errors when getting by group', async () => {
+            jest.spyOn(StudentManager.prototype, 'getStudentsByGroup').mockRejectedValue(new Error('DB Error'));
+
+            const res = await request(app)
+                .get('/api/students/group/1')
+                .set('Authorization', `Bearer ${token}`);
+
+            expect(res.statusCode).toEqual(500);
         });
     });
 

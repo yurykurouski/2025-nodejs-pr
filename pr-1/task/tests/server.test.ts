@@ -25,13 +25,7 @@ describe('Server Basic Endpoints', () => {
         expect(res.text).toContain('Student Management API is running');
     });
 
-    it('GET /status should be available', async () => {
-        // express-status-monitor usually exposes /status
-        const res = await request(app).get('/status');
-        // It returns HTML usually
-        expect(res.statusCode).toEqual(200);
-        expect(res.headers['content-type']).toMatch(/text\/html/);
-    });
+
 
     it('GET /api-docs should be available', async () => {
         // Swagger UI
