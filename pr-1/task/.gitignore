@@ -3,3 +3,4 @@ dist/
 .env
 logs/
 src/config/swagger_output.json
+coverage/
